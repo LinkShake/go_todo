@@ -15,5 +15,5 @@ func AddTodo(c *fiber.Ctx) error {
 	if res.Error != nil {
 		panic(res.Error)
 	}
-	return c.JSON(newTodo)
+	return	c.JSON(newTodo)
 }

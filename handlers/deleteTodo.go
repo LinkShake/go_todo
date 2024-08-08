@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	database "github.com/LinkShake/go_todo/db"
 	"github.com/LinkShake/go_todo/schema"
 	"github.com/gofiber/fiber/v2"
@@ -15,5 +17,5 @@ func DeleteTodo(c *fiber.Ctx) error {
 	if res.Error != nil {
 		panic(res.Error)
 	}
-	return c.SendString("ok")
+	return c.SendString(strconv.FormatUint(uint64(body.ID), 10))
 }

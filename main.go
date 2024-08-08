@@ -11,6 +11,8 @@ func main() {
 	database.Migrate(db)
 
 	app := fiber.New()
+	
+	app.Static("/", "./public/")
 
 	app.Get("/todos/:userId", handlers.GetTodos)
 	app.Post("/add-todo", handlers.AddTodo)
