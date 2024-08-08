@@ -15,6 +15,7 @@ type User struct {
 
 type Todo struct {
 	gorm.Model
+	ID uint `gorm:"primaryKey"`
 	Text string
 	UserId uuid.UUID `gorm:"type:uuid"`
 }

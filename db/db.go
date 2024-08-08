@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB = Connect()
 
 func Connect() *gorm.DB {
 	envErr := godotenv.Load()
