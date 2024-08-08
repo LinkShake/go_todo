@@ -4,13 +4,18 @@ import (
 	"os"
 
 	"github.com/LinkShake/go_todo/schema"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var connStr = os.Getenv("DATABASE_URL")
 
 func Connect() *gorm.DB {
+	envErr := godotenv.Load()
+	if envErr != nil {
+		panic(envErr)
+	}
+	connStr := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		panic(err)

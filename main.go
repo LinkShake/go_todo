@@ -2,7 +2,7 @@ package main
 
 import (
 	database "github.com/LinkShake/go_todo/db"
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -11,5 +11,5 @@ func main() {
 
 	app := fiber.New()
 
-	app.Listen(3000)	
+	app.Listen(":3000")	
 }
