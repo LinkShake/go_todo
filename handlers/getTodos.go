@@ -10,7 +10,7 @@ func GetTodos(c *fiber.Ctx) error {
 	var todos []schema.Todo
 	db := database.DB
 	userId := c.Params("userId")
-	res := db.Where("user_id = ?", userId).Find(&todos)
+	res := db.Unscoped().Where("user_id = ?", userId).Find(&todos)
 	if res.Error != nil {
 		panic(res.Error)
 	}

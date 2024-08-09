@@ -1,5 +1,5 @@
 const main = async () => {
-  const userId = "";
+  const userId = "stg";
   try {
     //select all necessary elements
     const todoContainer = document.getElementById("todo-container");
