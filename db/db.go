@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/LinkShake/go_todo/schema"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,7 +17,6 @@ func Connect() *gorm.DB {
 		panic(envErr)
 	}
 	connStr := os.Getenv("DATABASE_URL")
-	log.Debug(connStr)
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		panic(err)

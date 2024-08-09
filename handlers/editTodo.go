@@ -10,7 +10,7 @@ func EditTodo(c *fiber.Ctx) error {
 	db := database.DB
 	body := new(schema.Todo)
 	c.BodyParser(body)
-	updatedTodo := &schema.Todo{ID: uint(body.ID), UserId: body.UserId, Text: body.Text}
+	updatedTodo := &schema.Todo{ID: body.ID, UserId: body.UserId, Text: body.Text}
 	res := db.Save(&updatedTodo)
 	if res.Error != nil {
 		panic(res.Error)

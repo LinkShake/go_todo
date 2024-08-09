@@ -12,7 +12,9 @@ func main() {
 
 	app := fiber.New()
 	
-	app.Static("/", "./public/")
+	app.Static("/", "./public", fiber.Static{
+ 	   CacheDuration: 300,
+	})
 
 	app.Get("/todos/:userId", handlers.GetTodos)
 	app.Post("/add-todo", handlers.AddTodo)

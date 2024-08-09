@@ -13,7 +13,7 @@ func DeleteTodo(c *fiber.Ctx) error {
 	body := new(schema.Todo)
 	c.BodyParser(body)
 	todo := &schema.Todo{UserId: body.UserId, ID: body.ID}
-	res := db.Delete(&todo)
+	res := db.Unscoped().Delete(&todo)
 	if res.Error != nil {
 		panic(res.Error)
 	}
