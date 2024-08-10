@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// store := redis.New()
 	db := database.DB
 	database.Migrate(db)
 
@@ -20,6 +21,8 @@ func main() {
 	app.Post("/add-todo", handlers.AddTodo)
 	app.Delete("/delete-todo", handlers.DeleteTodo)
 	app.Put("/edit-todo", handlers.EditTodo)
+	app.Post("/signup", handlers.Signup)
+	app.Post("/login", handlers.Login)
 
 	app.Listen(":3000")	
 }
