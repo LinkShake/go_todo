@@ -22,12 +22,20 @@ const toggleEditVisibility = (id) => {
 };
 
 const main = async () => {
-  const userId = "";
+  // const userId = "";
   try {
+    //fetch initial data
+    const res = await fetch("/todos");
+    if (res.url === "http://localhost:3000/_login") {
+      window.location.href = "_login";
+      return;
+    }
+    const data = await res.json();
     //select all necessary elements
     const todoContainer = document.getElementById("todo-container");
     const addTodoBtn = document.getElementById("btn-add-todo");
     const input = document.getElementById("todo-input");
+    const logoutBtn = document.getElementById("btn-logout");
     let deleteBtns = document.querySelectorAll(".btn-delete");
     let editBtns = document.querySelectorAll(".btn-edit");
     let doneEditingBtns = document.querySelectorAll(".btn-done-editing");
@@ -35,9 +43,6 @@ const main = async () => {
     //inputContent
     let inputContent = "";
     let editInputContent = "";
-    //fetch initial data
-    const res = await fetch(`/todos/${userId}`);
-    const data = await res.json();
     //display all todos associated to user
     if (Array.isArray(data)) {
       data.forEach((currTodo) => {
@@ -64,7 +69,6 @@ const main = async () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId,
             text: inputContent,
           }),
         });
@@ -80,6 +84,19 @@ const main = async () => {
         console.log(err);
       }
     });
+    logoutBtn.addEventListener("click", async (e) => {
+      try {
+        const res = await fetch("/logout");
+        if (res.url === "http://localhost:3000/_login") {
+          window.location.href = res.url;
+          return;
+        }
+        const data = await res.json();
+        if (!data.Ok) {
+          alert(data.Msg);
+        }
+      } catch (err) {}
+    });
     deleteBtns.forEach((currBtn) => {
       currBtn.addEventListener("click", async (e) => {
         try {
@@ -92,7 +109,6 @@ const main = async () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              userId,
               id: +id,
             }),
           });
@@ -134,7 +150,6 @@ const main = async () => {
               "Content-type": "application/json",
             },
             body: JSON.stringify({
-              userId,
               id: +id,
               text: editInputContent,
             }),
