@@ -1,0 +1,21 @@
+<html>
+<body><div class=\"todos-container\"><button hx-get=\"/logout\">Logout</button><form hx-post=\"/add-todo\" hx-target=\".todos-container\" hx-swap=\"beforeend\" method=\"POST\"><input type=\"text\" required name=\"cont\"> <button class=\"btn-add-todo\">Add</button></form>
+</div></body></html>
+<div class=\"
+\"><p>
+</p>
+<button class=\"
+\" hx-get=\"
+\" hx-target=\"
+\">Edit</button> 
+<button hx-delete=\"/delete-todo\" hx-include=\"[name=&#39;todo-id&#39;]\" hx-target=\"
+\" hx-swap=\"delete\" class=\"
+\">Delete</button> <input type=\"number\" name=\"todo-id\" hidden value=\"
+\"></div>
+<div class=\"
+\"><form hx-put=\"/edit-todo\" hx-target=\"
+\"><input type=\"text\" required value=\"
+\" name=\"cont\"> <input type=\"text\" hidden value=\"
+\" name=\"id\"> 
+<button class=\"
+\">Done</button></form></div>

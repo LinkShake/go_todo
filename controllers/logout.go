@@ -1,20 +1,23 @@
-package handlers
+package controllers
 
 import (
 	"github.com/LinkShake/go_todo/redis"
+	"github.com/LinkShake/go_todo/types"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Logout(c *fiber.Ctx) error {
+	defer c.Response().CloseBodyStream()
 	sid := c.Cookies("sid")
 	err := redis.RemoveSessionId(sid)
 	if err != nil {
-		return c.JSON(&ReqFailed{
+		return c.JSON(&types.ReqFailed{
 			Ok: false,
 			Msg: err.Error(),
 		})
 	}
 	c.ClearCookie("sid")
 	c.Locals("userId", "")
-	return c.Redirect("/_login")
+	c.Response().Header.Set("HX-Redirect", "/_login")
+	return c.SendStatus(fiber.StatusOK)
 }

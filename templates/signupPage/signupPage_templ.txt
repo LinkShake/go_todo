@@ -1,0 +1,2 @@
+<html>
+<body><form hx-post=\"/signup\" method=\"POST\" hx-swap=\"none\"><input type=\"email\" required name=\"email\"> <input type=\"password\" required name=\"pwd\"> <button>Create account</button></form></body></html>

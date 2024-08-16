@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"context"
@@ -8,24 +8,32 @@ import (
 	"github.com/LinkShake/go_todo/helpers"
 	"github.com/LinkShake/go_todo/redis"
 	"github.com/LinkShake/go_todo/schema"
+	"github.com/LinkShake/go_todo/types"
 	"github.com/alexedwards/argon2id"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 var UserCtx context.Context
 
 func Login(c *fiber.Ctx) error {
+	defer c.Response().CloseBodyStream()
 	isUserLoggedIn := helpers.CheckLoggedIn(c)
 	if isUserLoggedIn {
 		return c.Redirect("/")
 	}
 	db := database.DB
-	body := new(User)
-	c.BodyParser(body)
+	email := c.FormValue("email")
+	pwd := c.FormValue("pwd")
+	if email == "" || pwd == "" {
+		return c.SendString("not ok")
+	}
+	log.Debug(email)
+	log.Debug(pwd)
 	var user schema.User
-	res := db.Unscoped().Where("email = ?", body.Email).Find(&user)
+	res := db.Unscoped().Where("email = ?", email).Find(&user)
 	if res.RowsAffected == 0 {
-		return c.JSON(&ReqFailed{
+		return c.JSON(&types.ReqFailed{
 			Ok: false,
 			Msg: "user not found",
 		})
@@ -35,12 +43,12 @@ func Login(c *fiber.Ctx) error {
 			panic(res.Error)
 		}
 
-		return c.JSON(&ReqFailed{
+		return c.JSON(&types.ReqFailed{
 			Ok: false,
 			Msg: "user not found",
 		})
 	}
-	if match, err := argon2id.ComparePasswordAndHash(body.Pwd, user.Pwd); err != nil {
+	if match, err := argon2id.ComparePasswordAndHash(pwd, user.Pwd); err != nil {
 		panic(err)
 	} else {
 		if match {
@@ -58,7 +66,8 @@ func Login(c *fiber.Ctx) error {
 				Domain: getDomain(),
 				MaxAge: 1000 * 60 * 60 * 24 * 365 * 10,
 			})
-			return c.Redirect("/")
+			c.Response().Header.Set("HX-Redirect", "/")
+			return c.SendStatus(fiber.StatusOK)
 		}
 		return c.SendString("invalid pwd")
 	}

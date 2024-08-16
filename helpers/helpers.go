@@ -5,7 +5,9 @@ import (
 	"encoding/hex"
 
 	"github.com/LinkShake/go_todo/redis"
+	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/google/uuid"
 )
 
@@ -42,4 +44,12 @@ func CheckLoggedIn(c *fiber.Ctx) bool {
 		panic(err)
 	}
 	return true
+}
+
+func Render(c *fiber.Ctx, component templ.Component, options ...func(*templ.ComponentHandler)) error {
+	componentHandler := templ.Handler(component)
+	for _, o := range options {
+		o(componentHandler)
+	}
+	return adaptor.HTTPHandler(componentHandler)(c)
 }

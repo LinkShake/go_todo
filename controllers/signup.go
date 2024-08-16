@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"fmt"
@@ -9,12 +9,14 @@ import (
 	"github.com/LinkShake/go_todo/helpers"
 	"github.com/LinkShake/go_todo/redis"
 	"github.com/LinkShake/go_todo/schema"
+	"github.com/LinkShake/go_todo/types"
 	"github.com/alexedwards/argon2id"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
 
 func Signup(c *fiber.Ctx) error {
+	defer c.Response().CloseBodyStream()
 	isUserLoggedIn := helpers.CheckLoggedIn(c)
 	if isUserLoggedIn {
 		return c.Redirect("/")
@@ -24,26 +26,29 @@ func Signup(c *fiber.Ctx) error {
 		panic(envErr)
 	}
 	db := database.DB
-	body := new(User)
-	c.BodyParser(body)
-	if !strings.Contains(body.Email, "@") {
-		return c.JSON(&ReqFailed{
+	email := c.FormValue("email")
+	pwd := c.FormValue("pwd")
+	if email == "" || pwd == "" {
+		return c.SendString("not ok")
+	}
+	if !strings.Contains(email, "@") {
+		return c.JSON(&types.ReqFailed{
 			Ok: false,
 			Msg: "invalid email",
 		})
 	}
 	var oldUser schema.User
-	res := db.Unscoped().Where("email = ?", body.Email).First(&oldUser)
+	res := db.Unscoped().Where("email = ?", email).First(&oldUser)
 	if res.Error != nil {
 		if res.RowsAffected != 0 {
 			panic(res.Error)
 		}
 
-		hash, err := argon2id.CreateHash(body.Pwd, argon2id.DefaultParams)
+		hash, err := argon2id.CreateHash(pwd, argon2id.DefaultParams)
 		if err != nil {
 			panic(err)
 		}
-		newUser := &schema.User{Email: body.Email, Pwd: hash}
+		newUser := &schema.User{Email: email, Pwd: hash}
 		res := db.Create(&newUser)
 		if res.Error != nil {
 			panic(res.Error)

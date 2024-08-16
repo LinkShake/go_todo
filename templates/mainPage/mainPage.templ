@@ -1,0 +1,42 @@
+package mainPage
+
+import "fmt"
+import "github.com/LinkShake/go_todo/schema"
+import "github.com/LinkShake/go_todo/templates/header"
+
+templ MainPage(todos []schema.Todo) {
+    <html>
+        @header.Header()
+        <body>
+            <div class="todos-container">
+                <button hx-get="/logout">Logout</button>
+                <form hx-post="/add-todo" hx-target=".todos-container" hx-swap="beforeend" method="POST">
+                    <input type="text" required name="cont" />
+                    <button class="btn-add-todo">Add</button>
+                </form>
+                for _, todo := range todos {
+                    @Todo(todo, false)
+                }
+            </div>
+        </body>
+    </html>
+}
+
+templ Todo(todo schema.Todo, isEditModeEnabled bool) {
+    if !isEditModeEnabled {
+        <div class={ fmt.Sprintf("todo-%v", todo.ID) }>
+            <p>{ todo.Text }</p>
+            <button class={ fmt.Sprintf("btn-edit-todo-%v", todo.ID) } hx-get={ fmt.Sprintf("/get-edit-todo/%v", todo.ID) } hx-target={ fmt.Sprintf(".todo-%v", todo.ID) }>Edit</button>
+            <button hx-delete="/delete-todo" hx-include="[name='todo-id']" hx-target={ fmt.Sprintf(".todo-%v", todo.ID) } hx-swap="delete" class={ fmt.Sprintf("btn-delete-todo-%v", todo.ID) }>Delete</button>
+            <input type="number" name="todo-id" hidden value={ fmt.Sprintf("%v", todo.ID) } />
+        </div>
+    } else {
+        <div class={ fmt.Sprintf("todo-%v", todo.ID) }>
+            <form hx-put="/edit-todo" hx-target={ fmt.Sprintf(".todo-%v", todo.ID) }>
+                <input type="text" required value={ fmt.Sprintf("%v", todo.Text) } name="cont" />
+                <input type="text" hidden value={ fmt.Sprintf("%v", todo.ID) } name="id" />
+                <button class={ fmt.Sprintf("btn-done-%v", todo.ID) }>Done</button>
+            </form>
+        </div>
+    }
+}

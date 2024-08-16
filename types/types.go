@@ -1,4 +1,4 @@
-package handlers
+package types
 
 type Todo struct {
 	ID uint

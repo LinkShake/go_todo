@@ -3,9 +3,12 @@ package main
 import (
 	"os"
 
+	"github.com/LinkShake/go_todo/controllers"
 	database "github.com/LinkShake/go_todo/db"
-	"github.com/LinkShake/go_todo/handlers"
+	"github.com/LinkShake/go_todo/helpers"
 	"github.com/LinkShake/go_todo/middleware"
+	"github.com/LinkShake/go_todo/templates/loginPage"
+	"github.com/LinkShake/go_todo/templates/signupPage"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/joho/godotenv"
@@ -26,24 +29,29 @@ func main() {
     	Key: os.Getenv("COOKIE_ENCRYPTION_KEY"),
 	}))
 
-	app.Static("/_login", "./public/_login", fiber.Static{
-		CacheDuration: -1,
-	})
-	app.Static("/_signup", "./public/_signup", fiber.Static{
-		CacheDuration: -1,
-	})
-	app.Static("/", "./public", fiber.Static{
- 	   CacheDuration: -1,
-	})
+	app.Static("/public", "./public")
 
-	app.Get("/is-user-logged-in", handlers.IsUserLoggedIn)
-	app.Get("/todos", middleware.Auth, handlers.GetTodos)
-	app.Post("/add-todo", middleware.Auth, handlers.AddTodo)
-	app.Delete("/delete-todo", middleware.Auth, handlers.DeleteTodo)
-	app.Put("/edit-todo", middleware.Auth, handlers.EditTodo)
-	app.Get("/logout", middleware.Auth, handlers.Logout)
-	app.Post("/signup", handlers.Signup)
-	app.Post("/login", handlers.Login)
+	app.Get("/is-user-logged-in", controllers.IsUserLoggedIn)
+	app.Get("/", middleware.Auth, controllers.GetMainPage)
+	app.Get("/_login", func (c *fiber.Ctx) error {
+		if helpers.CheckLoggedIn(c) {
+			return c.Redirect("/")
+		}
+		return helpers.Render(c, loginPage.LoginPage())
+	})
+	app.Get("/_signup", func (c *fiber.Ctx) error {
+		if helpers.CheckLoggedIn(c) {
+			return c.Redirect("/")
+		}
+		return helpers.Render(c, signupPage.SignUp())
+	})
+	app.Get("/get-edit-todo/:id", middleware.Auth, controllers.GetEditTodo)
+	app.Post("/add-todo", middleware.Auth, controllers.AddTodo)
+	app.Delete("/delete-todo", middleware.Auth, controllers.DeleteTodo)
+	app.Put("/edit-todo", middleware.Auth, controllers.EditTodo)
+	app.Get("/logout", middleware.Auth, controllers.Logout)
+	app.Post("/signup", controllers.Signup)
+	app.Post("/login", controllers.Login)
 
 	app.Listen(":3000")	
 }

@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"github.com/LinkShake/go_todo/helpers"
@@ -6,6 +6,7 @@ import (
 )
 
 func IsUserLoggedIn(c *fiber.Ctx) error {
+	defer c.Response().CloseBodyStream()
 	isUserLoggedIn := helpers.CheckLoggedIn(c)
 	if isUserLoggedIn {
 		return c.Redirect("/")
