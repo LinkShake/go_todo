@@ -8,10 +8,9 @@ import (
 	"github.com/LinkShake/go_todo/helpers"
 	"github.com/LinkShake/go_todo/redis"
 	"github.com/LinkShake/go_todo/schema"
-	"github.com/LinkShake/go_todo/types"
+	"github.com/LinkShake/go_todo/templates/loginPage"
 	"github.com/alexedwards/argon2id"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 )
 
 var UserCtx context.Context
@@ -26,27 +25,19 @@ func Login(c *fiber.Ctx) error {
 	email := c.FormValue("email")
 	pwd := c.FormValue("pwd")
 	if email == "" || pwd == "" {
-		return c.SendString("not ok")
+		return helpers.Render(c, loginPage.LoginPage("Received empty email or password"))
 	}
-	log.Debug(email)
-	log.Debug(pwd)
 	var user schema.User
 	res := db.Unscoped().Where("email = ?", email).Find(&user)
 	if res.RowsAffected == 0 {
-		return c.JSON(&types.ReqFailed{
-			Ok: false,
-			Msg: "user not found",
-		})
+		return helpers.Render(c, loginPage.LoginPage("Incorrect email or password"))
 	}
 	if res.Error != nil {
 		if res.RowsAffected != 0 {
 			panic(res.Error)
 		}
 
-		return c.JSON(&types.ReqFailed{
-			Ok: false,
-			Msg: "user not found",
-		})
+		return helpers.Render(c, loginPage.LoginPage("Incorrect email or password"))
 	}
 	if match, err := argon2id.ComparePasswordAndHash(pwd, user.Pwd); err != nil {
 		panic(err)
@@ -69,6 +60,6 @@ func Login(c *fiber.Ctx) error {
 			c.Response().Header.Set("HX-Redirect", "/")
 			return c.SendStatus(fiber.StatusOK)
 		}
-		return c.SendString("invalid pwd")
+		return helpers.Render(c, loginPage.LoginPage("Incorrect email or password"))
 	}
 }

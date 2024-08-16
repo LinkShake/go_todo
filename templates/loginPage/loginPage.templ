@@ -2,11 +2,14 @@ package loginPage
 
 import "github.com/LinkShake/go_todo/templates/header"
 
-templ LoginPage() {
+templ LoginPage(errorMsg string) {
     <html>
         @header.Header()
         <body>
-            <form hx-post="/login" method="POST" hx-swap="none">
+            if errorMsg != "" {
+                <p style="color: red;">{ errorMsg }</p>
+            }
+            <form hx-post="/login" method="POST">
                 <input type="email" required name="email" />
                 <input type="password" required name="pwd" />
                 <button>Login</button>

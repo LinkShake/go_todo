@@ -1,2 +1,5 @@
 <html>
-<body><form hx-post=\"/login\" method=\"POST\" hx-swap=\"none\"><input type=\"email\" required name=\"email\"> <input type=\"password\" required name=\"pwd\"> <button>Login</button><p>Don't have an account? <a href=\"http://localhost:3000/signup\">Create one</a></p></form></body></html>
+<body>
+<p style=\"color: red;\">
+</p>
+<form hx-post=\"/login\" method=\"POST\"><input type=\"email\" required name=\"email\"> <input type=\"password\" required name=\"pwd\"> <button>Login</button><p>Don't have an account? <a href=\"http://localhost:3000/signup\">Create one</a></p></form></body></html>

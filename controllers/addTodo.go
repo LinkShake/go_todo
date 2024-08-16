@@ -17,7 +17,7 @@ func AddTodo(c *fiber.Ctx) error {
 	c.BodyParser(body)
 	text := c.FormValue("cont")
 	if text == "" {
-		return c.SendString("not ok")
+		return fiber.NewError(fiber.StatusNoContent, "Received empty input content")
 	}
 	userId := c.Locals("userId").(string)
 	parsedUserId, err := uuid.Parse(userId)

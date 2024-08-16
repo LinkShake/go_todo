@@ -9,7 +9,7 @@ import (
 	"github.com/LinkShake/go_todo/helpers"
 	"github.com/LinkShake/go_todo/redis"
 	"github.com/LinkShake/go_todo/schema"
-	"github.com/LinkShake/go_todo/types"
+	"github.com/LinkShake/go_todo/templates/signupPage"
 	"github.com/alexedwards/argon2id"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -29,19 +29,16 @@ func Signup(c *fiber.Ctx) error {
 	email := c.FormValue("email")
 	pwd := c.FormValue("pwd")
 	if email == "" || pwd == "" {
-		return c.SendString("not ok")
-	}
+		return helpers.Render(c, signupPage.SignUp("Received empty email or password"))
+	} 
 	if !strings.Contains(email, "@") {
-		return c.JSON(&types.ReqFailed{
-			Ok: false,
-			Msg: "invalid email",
-		})
+		return helpers.Render(c, signupPage.SignUp("Invalid email format"))
 	}
 	var oldUser schema.User
 	res := db.Unscoped().Where("email = ?", email).First(&oldUser)
 	if res.Error != nil {
 		if res.RowsAffected != 0 {
-			panic(res.Error)
+			return helpers.Render(c, signupPage.SignUp("Email already in use"))
 		}
 
 		hash, err := argon2id.CreateHash(pwd, argon2id.DefaultParams)
@@ -67,9 +64,10 @@ func Signup(c *fiber.Ctx) error {
 			Domain: getDomain(),
 			MaxAge: 1000 * 60 * 60 * 24 * 365 * 10,
 		})
-		return c.Redirect("/")
+		c.Response().Header.Set("HX-Redirect", "/")
+		return c.SendStatus(fiber.StatusOK)
 	}
-	return c.SendString("")
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func getDomain() string {

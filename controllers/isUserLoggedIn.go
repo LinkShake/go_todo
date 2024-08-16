@@ -11,5 +11,5 @@ func IsUserLoggedIn(c *fiber.Ctx) error {
 	if isUserLoggedIn {
 		return c.Redirect("/")
 	}
-	return c.SendString("ok")
+	return c.SendStatus(fiber.StatusOK)
 }

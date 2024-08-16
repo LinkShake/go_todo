@@ -17,7 +17,7 @@ func DeleteTodo(c *fiber.Ctx) error {
 	c.BodyParser(body)
 	id := c.FormValue("todo-id")
 	if id == "" {
-		return c.SendString("not ok")
+		return fiber.NewError(fiber.StatusNoContent, "Received empty id")
 	}
 	parsedId, parsingErr := strconv.ParseUint(id, 10, 64)
 	if parsingErr != nil {

@@ -19,8 +19,12 @@ func EditTodo(c *fiber.Ctx) error {
 	c.BodyParser(body)
 	id := c.FormValue("id")
 	text := c.FormValue("cont")
-	if text == "" || id == "" {
-		return c.SendString("not ok")
+	if text == "" && id == "" {
+		return fiber.NewError(fiber.StatusNoContent, "Received empty input content and id")
+	} else if text == "" && id != "" {
+		return fiber.NewError(fiber.StatusNoContent, "Received empty input content")
+	} else if text != "" && id == "" {
+		return fiber.NewError(fiber.StatusNoContent, "Received empty id")
 	}
 	parsedId, parsingErr := strconv.ParseUint(id, 10, 64)
 	if parsingErr != nil {

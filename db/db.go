@@ -17,7 +17,7 @@ func Connect() *gorm.DB {
 		panic(envErr)
 	}
 	connStr := os.Getenv("DATABASE_URL")
-	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{TranslateError: true})
 	if err != nil {
 		panic(err)
 	}

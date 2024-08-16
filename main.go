@@ -11,6 +11,7 @@ import (
 	"github.com/LinkShake/go_todo/templates/signupPage"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 )
 
@@ -28,6 +29,7 @@ func main() {
 	app.Use(encryptcookie.New(encryptcookie.Config{
     	Key: os.Getenv("COOKIE_ENCRYPTION_KEY"),
 	}))
+	app.Use(recover.New())
 
 	app.Static("/public", "./public")
 
@@ -37,13 +39,13 @@ func main() {
 		if helpers.CheckLoggedIn(c) {
 			return c.Redirect("/")
 		}
-		return helpers.Render(c, loginPage.LoginPage())
+		return helpers.Render(c, loginPage.LoginPage(""))
 	})
 	app.Get("/_signup", func (c *fiber.Ctx) error {
 		if helpers.CheckLoggedIn(c) {
 			return c.Redirect("/")
 		}
-		return helpers.Render(c, signupPage.SignUp())
+		return helpers.Render(c, signupPage.SignUp(""))
 	})
 	app.Get("/get-edit-todo/:id", middleware.Auth, controllers.GetEditTodo)
 	app.Post("/add-todo", middleware.Auth, controllers.AddTodo)

@@ -2,11 +2,14 @@ package signupPage
 
 import "github.com/LinkShake/go_todo/templates/header"
 
-templ SignUp() {
+templ SignUp(errorMsg string) {
     <html>
         @header.Header()
         <body>
-            <form hx-post="/signup" method="POST" hx-swap="none">
+            if errorMsg != "" {
+                <p style="color: red;">{ errorMsg }</p>
+            }
+            <form hx-post="/signup" method="POST">
                 <input type="email" required name="email" />
                 <input type="password" required name="pwd" />
                 <button>Create account</button>

@@ -13,7 +13,7 @@ func GetEditTodo(c *fiber.Ctx) error {
 	db := database.DB
 	todoId := c.Params("id")
 	if todoId == "" {
-		panic("invalid todoId")
+		return fiber.NewError(fiber.StatusNoContent, "Received empty id")
 	}
 	userId := c.Locals("userId").(string)
 	parsedUserId, err := uuid.Parse(userId)
